@@ -1,29 +1,25 @@
-var express = require('express');
-var router = express.Router();
-var bookController = require("../controllers/book.controller");
-var validate = require("../validate/book.validate");
+const express = require('express')
+const router = express.Router()
+const db = require('../db')
+const shortId = require('shortid')
+const controller = require('../controllers/book.controller')
 
-//Display screen books
-router.get('/', validate.cookies, bookController.showuser, bookController.show);
 
-//Search books
-router.get('/search', bookController.search);
+// Book
 
-//Create books
-router.get('/create', bookController.create);
+router.get("/", controller.indexBook);
 
-//Update books
-router.get('/update/:bookId', bookController.update);
+// Create books
+router.post("/create", controller.createBook);
 
-//Delete books
-router.get('/delete/:bookId', bookController.delete);
+// Update books
 
-// METHOD POST
+router.get('/:id/update' , controller.getUpdateBook)
 
-//Update books
-router.post('/update/:bookId', bookController.postUpdate);
+router.post('/:id/update' , controller.updatedBook)
 
-//Create books  
-router.post('/create', validate.postCreate, bookController.postCreate)
+// Delete books
+router.get('/:id/delete', controller.deleteBook)
+
 
 module.exports = router;

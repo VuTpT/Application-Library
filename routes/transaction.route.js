@@ -1,16 +1,17 @@
-var express = require('express');
-var router = express.Router();
-var transactionController = require("../controllers/transaction.controller");
+const express = require('express')
+const router = express.Router();
+const controller = require('../controllers/transaction.controller')
 
-//Display screen transactions
-router.get('/view', transactionController.view);
 
-//Search userId
-router.get('/search', transactionController.search);
+// Transactions
 
-router.get('/:transactionId/complete', transactionController.isComplete); 
+router.get("/", controller.getTransaction);
 
-//Create transactions  
-router.post('/create', transactionController.postCreate)
+// Create Transactions
+router.post("/", controller.createTransaction);
+
+// isComplete
+
+router.get("/:id/complete", controller.complete)
 
 module.exports = router;

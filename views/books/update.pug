@@ -1,15 +1,7 @@
-extends ../../layouts/common
+extends ../layouts/common
+block content  
+  h2.mb-4  Update Title Book
 
-block content
-
-  h1(class="text-center") Books Update
-
-  form(action="", method="POST", class="d-flex")
-    
-    label Title: 
-       
-    input(type="text", class="form-control", name= "title" value=title)
-
-    button(type="submit", class="btn btn-outline-primary ml-2") Edit
-
-      
+  form.form-group(action='/books/' + book.id + '/update' , method='POST')
+    input.form-control(type='text', name='title' value=book.title)
+    button.btn.btn-primary.mt-2(type='subtmit') Update

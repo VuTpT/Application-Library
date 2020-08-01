@@ -1,103 +1,58 @@
-var db = require('../db');
-const bodyParser = require('body-parser');
-const shortid = require('shortid');
-const Joi = require('joi');
+const db = require('../db')
+const shortId = require('shortid')
 
-module.exports.view = function(request, response) {
-  var isAdmin = db.get("users").value().find(user => user.userId === request.cookies.userId).isAdmin;
-  var users = db.get('users').value();
-  var books = db.get('books').value();
-  var transactions = db.get('transactions').value();
-  
-  var data = [];
-  transactions.map(function (value, index){
-    data[index] = {};
-    data[index]['transactionId'] = value.transactionId;
-    data[index]['userId'] = db
-      .get('users')
-      .find({ userId: value.userId })
-      .value()
-      .name;
-    data[index]['bookId'] = db
-      .get('books')
-      .find({ bookId: value.bookId })
-      .value()
-      .title;
-    data[index]['isComplete'] = value.isComplete;
+module.exports.getTransaction = (req, res) => {
+  let isAdmin = db.get("users").value().find(user => user.id === req.cookies.userId).isAdmin
+  let books = db.get("books").value();
+  let users = db.get("users").value();
+  let transactions = db.get("transactions").value();
+
+  let changeTrans = transactions.map(trans => {
+    let book = books.find(book => book.id === trans.bookId);
+    let user = users.find(user => user.id === trans.userId);
+    
+    return { 
+      bookTitle: book.title, 
+      userName: user.name,
+      userId : user.id,
+      id: trans.id,
+      isComplete: trans.isComplete  
+};
   });
-  console.log(data);
-  
+
   if(isAdmin){
-  response.render('transactions/index', {
-    transactions : data,
-    books : books,
-    users : users
+    res.render("transactions/index", {
+      transactions: changeTrans,
+      books,
+      users : users,
+      isAdmin
     });
-  };
-};
-
-module.exports.search = function (request, response) {
-  var q = request.query.q
-  var matchedUserId = db
-    .get('transactions')
-    .value()
-    .filter(function(value) {
-      return q ? value.transactionId.toLowerCase().indexOf(q.toLowerCase()) !== -1 : true;
-    });
-    response.render('transactions/search', {
-      transactions : matchedUserId,
-      bookId : matchedUserId,
-      userId : matchedUserId
+  } else {
+    res.render("transactions/index", {
+      transactions: changeTrans.filter(trans => trans.userId === req.cookies.userId),
+      books,
+      users : users.filter(user => user.id === req.cookies.userId),
+      isAdmin
   });
-};
-
-// METHOD POST
-
-module.exports.postCreate = function(request, response) {
-  
-  db.get('transactions')
-    .push({ transactionId : shortid.generate(), userId : request.body.user, bookId: request.body.book })
-    .write()
-    .id;
-  
-  response.redirect('/transaction/view');
-};
-
-module.exports.isComplete = function(request, response) {
-  var errors = [];
-  
-  // if(!request.params.transactionId){
-  //   errors.push('TransactionId không hợp lệ') ;
-  // }
-  
-  var transaction = db
-    .get('transactions')
-    .find({ transactionId : request.params.transactionId })
-    .value();
-  // return response.json(transaction);
-  if(!transaction) {
-    errors.push('Không tìm thấy transaction');
   }
-  
-  if(errors.length) {
-    return response.render('transactions/complete', {
-      errors : errors
-    });
-  }
-  
-  db.get('transactions')
-    .find({ transactionId : request.params.transactionId })
-    .assign({ isComplete : true })
-    .write()
-  return response.redirect('/transaction/view');
+}
+
+module.exports.createTransaction = (req, res) => {
+  req.body.id = shortId.generate();
+
+  db.get("transactions")
+    .push(req.body)
+    .write();
+  res.redirect("back");
+}
+
+module.exports.complete = (req, res) => {
+  let id = req.params.id;
+
+  db.get("transactions")
+    .find({ id: id })
+    .set("isComplete", true)
+    .write();
+
+  res.redirect("back");
 };
-
-  // trước tiên thì bạn xem là bạn đang dùng GET, đồng nghĩ với việc là không có req.body
-  // thì lấy đâu ra req.body mà chỉ có query hoặc params lấy trên url
-  // khi tạo ra 1 Joi.object({}) cái bạn viết trong này tức làm cái yêu cầu
-  // nó sẽ ở dạng objec {key : value} đơn giản thôi
-
-  // giả sử như bạn muốn so sánh id thì khi bạn req.params thì  nó như này {id : "ajhdsflkahdf"} kiểu vậy
-  // công đoạn validate ở đây thực chất là kiểm tra 2 object có giống nhau không chứ không có gì ghê gớm lắm đâu
-  // đấy mình nói xong rồi
-  

@@ -1,82 +1,78 @@
-var db = require('../db');
-const bodyParser = require('body-parser');
-const shortid = require('shortid');
-const bcrypt = require('bcrypt');
+const db = require('../db')
+const shortId = require('shortid')
+let count = 0
+const md5 = require('md5')
+const bcrypt = require('bcrypt')
+const saltRounds = 10;
 
-
-
-
-module.exports.search = function (request, response) {
-  var q = request.query.q
-  var matchedTitle = db
-    .get('users')
-    .value()
-    .filter(function(value) {
-      return q ? value.name.toLowerCase().indexOf(q.toLowerCase()) !== -1 : true;
-    });
-    response.render('user/index', {
-      users: matchedTitle
-  });
-};
-
-module.exports.create = function(request, response) {
-  response.render('user/create');
-};
-
-module.exports.update = function(request, response) {
-  response.render('user/update');
-};
-
-module.exports.delete = function(request, response) {
-  var userId = request.params.userId;
+// check Admin
+// get user
+module.exports.indexUser = (req,res) => {
+  let isAdmin = db.get("users").value().find(user => user.id === req.cookies.userId).isAdmin;
+  let users = db.get("users").value();
   
-  var book = db
-  .get('users')
-  .remove({ userId : userId })
-  .write();
-  
-  response.redirect('/users/login');
-};
+  if(isAdmin){
+    res.render("users/index", {
+      users: users.sort(),
+      isAdmin
+  })
+  } else {
+    res.render("users/index", {
+      users: users.filter(user => user.id === req.cookies.userId),
+      isAdmin
+  })
+  }
+}
 
-// METHOD POST
-
-module.exports.postUpdate = function(request, response) {
-
-  db.get('users')
-    .find({ userId : request.params.userId })
-    .assign({ name: request.body.name })
-    .write()
-  
-  response.redirect('/users/login');
-};
-
-module.exports.postCreate = async function(request, response) {
-    let users = db.get("users").value();
-    const salt = await bcrypt.genSalt(10);
-    const hashPass = await bcrypt.hash(request.body.password, salt)
-     
-   let newUser = {
-    id: shortid.generate(),
-    password : hashPass,
-    email: request.body.email,
-    name: request.body.name,
+// create user
+module.exports.createUser = async (req,res) => {
+  let users = db.get("users").value();
+  let hashedPassword = await bcrypt.hash(req.body.password, saltRounds);
+  let newUser = {
+    id: shortId.generate(),
+    name: req.body.name,
+    password : hashedPassword,
+    email: req.body.email,
     isAdmin: false
   }
-   
-  let checkEmail = users.find(user => user.email === request.body.email)
+  let checkEmail = users.find(user => user.email === req.body.email)
   if(checkEmail){
-    response.render("users/index", {
+    res.render("users/index", {
       users: users,
       errors: ["User have been already exists"],
-      values: request.body
+      values: req.body
     })
     return;
   }
-   
-   db.get("users").push(newUser).write();
-  
-  response.redirect('/books')
-  
+
+  db.get("users").push(newUser).write();
+
+  res.redirect("/users")
+}
+// update user
+
+module.exports.getUpdateUser = (req,res) => {
+  let user = db.get('users').find({id: req.params.id}).value();
+  res.render('users/update', {
+    user
+  })
+}
+
+module.exports.updatedUser = (req,res) => {
+  db.get('users').find({id: req.params.id}).assign(req.body).write();
+  res.redirect('/users')
+}
+
+// delete user
+module.exports.deleteUser = (req,res) => {
+  db.get("users").remove({id: req.params.id}).write();
+  res.redirect("/users")
+}
+
+// count cookies
+module.exports.countCookie = (req,res,next) => {
+  if(req.cookies){
+    console.log('cookies: '+ ++count)
   }
-
-
+  next()
+}

@@ -1,17 +1,15 @@
-var db = require('../db');
+const db = require('../db')
 
-
-module.exports.requireAuth = function(request, response, next) {
-  if(!request.cookies.userId) {
-    response.redirect('/auth/login');
+module.exports.requireAuth = (req,res,next) => {
+  if(!req.cookies.userId){
+    res.redirect("/auth/login");
     return;
   }
   
-  var user = db.get('users').find({ userId : request.cookies.userId }).value();
-  
-  if(!user) {
-    response.redirect('/auth/login');
+  let user = db.get("users").find({id: req.cookies.userId}).value();
+  if(!user){
+    res.redirect("/auth/login");
     return;
   }
   next();
-};
+}

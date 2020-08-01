@@ -1,29 +1,29 @@
-var md5 = require('md5');
+const db = require('../db')
+const shortId = require('shortid')
+const md5 = require('md5');
+const bcrypt = require('bcrypt')
+const saltRounds = 10;
 
-var db = require('../db');
-const bodyParser = require('body-parser');
-const shortid = require('shortid');
-const bcrypt = require('bcrypt');
-
-module.exports.login = function(request, response) {
-  response.render('auth/login')
+module.exports.login = (req,res) => {
+  res.render("auth/login")
 }
 
-
-module.exports.postLogin = async function(request, response, next) {
-  var email = request.body.email;
-  var password = request.body.password; 
+module.exports.postLogin = async (req, res) => {
+  let email = req.body.email;
+  // let hashedPassword = await bcrypt.hash(req.body.password, saltRounds);
+  let password = req.body.password;
   
-  var user = db.get('users').find({ email: email }).value();
-  let checkPassword = await bcrypt.compare(request.body.password, user.password);
+  let user = db
+    .get("users")
+    .find({ email: email })
+    .value();
 
-  if(!user) {
-    response.render('auth/login', {
-      errors : [
-        'Users does not exist'
-      ],
-      values: request.body
+  if (!user) {
+    res.render("auth/login", {
+      errors: ["User does not exist."],
+      values: req.body
     });
+
     return;
   }
 
@@ -35,33 +35,29 @@ module.exports.postLogin = async function(request, response, next) {
   }
 
   if (user.wrongLoginCount >= 4) {
-    response.render("auth/login", {
+    res.render("auth/login", {
       errors: ["Your account has been locked."],
-      values: request.body
+      values: req.body
     });
 
     return;
   }
-
-  console.log(checkPassword);
-
+  let checkPassword = await bcrypt.compare(req.body.password, user.password)
+  console.log(checkPassword)
   if (!checkPassword) {
     db.get("users")
       .find({ id: user.id })
       .assign({ wrongLoginCount: (user.wrongLoginCount += 1) })
       .write();
 
-    response.render("auth/login", {
+    res.render("auth/login", {
       errors: ["Wrong password."],
-      values: request.body
+      values: req.body
     });
 
     return;
   }
 
-  response.cookie('userId', user.id)
-  response.redirect('/books');
-  next();
+  res.cookie("userId", user.id);
+  res.redirect("/users");
 };
-
-

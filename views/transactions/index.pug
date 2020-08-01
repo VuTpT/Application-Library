@@ -1,56 +1,38 @@
-extends ../../layouts/common
-
+extends ../layouts/common
 block content
-     
-    h1(class="text-center") Transactions Libary
-    
-    if errors
-      each error in errors 
-        .alert.alert-danger(role='alert')= error
+  h2.mb-4  Transaction
 
-    form(action="/route", class="d-flex")
+  if isAdmin
+    form(method='POST')
+      .form-group
+        .mt-2
+          label User Name
+          select.browser-default.custom-select(name='userId')
+            each user in users
+              option( value=user.id) #{user.name}
+        .mt-2
+          label Book Title
+          select.browser-default.custom-select(name='bookId')
+            each book in books
+              option( value=book.id) #{book.title}
+      button.btn.btn-primary(type="submit") Create
 
-      button(type="submit", class="btn btn-outline-primary") Back
 
-    form(action="/transaction/search", method="GET", class="d-flex")
-
-      input(type="text", name= "q", class="form-control")
-
-      button(type="Submit", class="btn btn-outline-primary ml-2") Search ID     
-
-    if isAdmin
-      form(action="/transaction/create", method="POST", class="d-flex")
-        label Users:
-        span &nbsp
-        select(name='user')
-          each user in users
-            option(value= user.userId, class="dropdown-item") #{user.name}
-        span &nbsp  
-
-        label Books:
-        span &nbsp
-        select(name='book')
-          each book in books
-            option(value= book.bookId, class="dropdown-item") #{book.title}  
-          span &nbsp
-        button(type="submit", class="btn btn-outline-primary ml-2") Add
-      
-    table(style='width:100%', class="table table-bordered")
-      tr
-        th(scope="col") ID
-        th(scope="col") User
-        th(scope="col") Book
-        th(scope="col") Logout
+  table.table.table-hover
+    thead
+      tr 
+        th User Name
+        th Book Title
+        th Status
+    tbody
       each transaction in transactions
         tr
-          td= transaction.transactionId       
-          td= transaction.userId 
-          td= transaction.bookId
+          td #{transaction.userName}
+          td #{transaction.bookTitle}
           td
-            if transaction.isComplete
-              a(class="btn btn-outline-primary", href="#") True
-            else
-              a(class="btn btn-outline-primary", href="/transaction/"+  transaction.transactionId + "/complete" ) False
-              
-             
+            span= transaction.isComplete ? "Đòi mãi mới trả" : "Có dấu hiệu ăn quỵt"
+            a.ml-4(href="/transactions/" + transaction.id +"/complete")
+              if isAdmin
+                button.btn.btn-primary Complete
 
+        

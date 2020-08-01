@@ -1,73 +1,36 @@
-var db = require('../db');
-const bodyParser = require('body-parser');
-const shortid = require('shortid');
+const db = require('../db')
+const shortId = require('shortid')
 
-module.exports.showuser = function(request, response, next) {
-  var isAdmin = db.get("users").value().find(user => user.userId === request.cookies.userId).isAdmin;
-  if(isAdmin){
-    response.render('isAdmin/lookuser');
-  }
-  next();
-};
-
-module.exports.show = function(request, response) {
-  response.render('books/index', {
-    books : db.get('books').value()
-    });
-};
-
-module.exports.search = function (request, response) {
-  var q = request.query.q
-  var matchedTitle = db
-    .get('books')
-    .value()
-    .filter(function(value) {
-      return q ? value.title.toLowerCase().indexOf(q.toLowerCase()) !== -1 : true;
-    });
-    response.render('books/index', {
-      books: matchedTitle
+module.exports.indexBook = (req, res) => {
+  let isAdmin = db.get("users").value().find(user => user.id === req.cookies.userId).isAdmin;
+  res.render("books/index", {
+    books: db.get("books").value(),
+    isAdmin
   });
-};
+}
 
-module.exports.create = function(request, response) {
-  response.render('books/create');
-};
+module.exports.createBook = (req, res) => {
+  req.body.id = shortId.generate();
+  console.log(req.body)
+  db.get("books")
+    .push(req.body)
+    .write();
+  res.redirect("back");
+}
 
-module.exports.update = function(request, response) {
-  response.render('books/update');
-};
+module.exports.getUpdateBook = (req,res) => {
+  let book = db.get('books').find({id: req.params.id}).value();
+  res.render('books/update', {
+    book
+  })
+}
 
-module.exports.delete = function(request, response) {
-  var bookId = request.params.bookId;
-  
-  var book = db
-  .get('books')
-  .remove({ bookId : bookId })
-  .write();
-  
-  response.redirect('/books');
-};
+module.exports.updatedBook = (req,res) => {
+  db.get('books').find({ id: req.params.id }).assign(req.body).write();
+  res.redirect('/books')
+}
 
-// METHOD POST
-
-module.exports.postUpdate = function(request, response) {
-
-  db.get('books')
-    .find({ bookId : request.params.bookId })
-    .assign({ title: request.body.title })
-    .write()
-  
-  response.redirect('/books');
-};
-
-module.exports.postCreate = function(request, response) {
-  
-  console.log(response.success);
-  
-  db.get('books')
-    .push({ bookId : shortid.generate(),title: request.body.title, description : request.body.description })
-    .value()
-    .id;
-  
-  response.redirect('/books');
-};
+module.exports.deleteBook = (req,res) => {
+  db.get('books').remove({id : req.params.id}).write()
+  res.redirect('/books')
+}

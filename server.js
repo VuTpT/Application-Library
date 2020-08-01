@@ -1,36 +1,37 @@
 const express = require("express");
-const app = express();
-var bookRouter = require("./routes/book.route");
-var userRouter = require("./routes/user.route");
-var transactionRouter = require("./routes/transaction.route");
-var authRouter = require("./routes/auth.route");
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var favicon = require('serve-favicon');
+const bodyParser = require("body-parser");
+const cookieParser = require('cookie-parser')
 
-var authMiddleware = require("./middlewares/auth.middleware");
+const userRoute = require("./routes/user.route")
+const bookRoute = require("./routes/book.route")
+const transactionRoute = require("./routes/transaction.route")
+const authRoute = require("./routes/auth.route")
+const authMiddleware = require("./middlewares/auth.middleware")
+
+
+const app = express();
 
 
 app.set("view engine", "pug");
-app.set("books", "./views/books");
-app.set("user", "./views/user");
-app.set("transactions", "./views/transactions");
-app.use(cookieParser());
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.set("views", "./views");
 
-app.use('/books', authMiddleware.requireAuth, bookRouter);
-app.use('/users', userRouter);
-app.use('/transaction', transactionRouter);
-app.use('/auth', authRouter);
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cookieParser())
 
-app.use('/static', express.static('public'));
-app.use(express.static("public"));
-app.use(favicon(path.join(__dirname, "public", "favicon.ico")));
+app.use(express.static('public'));
 
 
+app.get("/", (request, response) => {
+  response.render("index");
+});
 
-// listen for requests :)
-app.listen(process.env.PORT, () => {
-  console.log("Server listening on port " + process.env.PORT);
+app.use('/users', authMiddleware.requireAuth, userRoute)
+app.use('/books', authMiddleware.requireAuth, bookRoute)
+app.use('/transactions', transactionRoute)
+app.use('/auth',authRoute)
+
+// Run server
+const listener = app.listen(process.env.PORT, () => {
+  console.log("Your app is listening on port " + listener.address().port);
 });
