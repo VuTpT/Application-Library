@@ -1,0 +1,14 @@
+extends ../../layouts/common
+
+block content
+
+  h1(class="text-center") Users Update
+
+  form(action="", method="POST", class="d-flex")
+
+    label Name: 
+
+    p 
+      input(type="text", class="form-control", name= "name" value=name)
+
+    button(type="submit", class="btn btn-outline-primary ml-2") Edit

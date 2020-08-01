@@ -1,0 +1,31 @@
+extends ../../layouts/common
+
+block content
+
+  h1(class="text-center") Users List
+
+  form(action="/users/create", class="d-flex")
+
+    button(type="submit", class="btn btn btn-outline-primary") Add User
+
+  form(action="/route", class="d-flex")
+
+    button(type="submit", class="btn btn btn-outline-primary") Back
+
+  form(action="/users/search", method="GET", class="d-flex")
+
+    input(type="text", name= "q", class="form-control")
+
+    button(type="submit", class="btn btn btn-outline-primary ml-2") Search
+
+  table(style='width:100%', class="table table-bordered")
+    each user in users
+      tr
+        th Name
+        th Actions
+      tr
+        td= user.name
+          //TẠO KHOẢN CÁCH
+        td
+          a(class="btn btn-outline-primary", href='/users/update/' + user.userId) Update
+          a(class="btn btn-outline-primary ml-2", href='/users/delete/' + user.userId) Delete

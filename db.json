@@ -1,0 +1,103 @@
+{
+  "books": [
+    {
+      "bookId": "1mWuehzHk",
+      "title": "Daily House",
+      "description": "I Love Myseft"
+    },
+    {
+      "bookId": "XxDiPItrB",
+      "title": "Ky Sinh Trung",
+      "description": "Lost End"
+    },
+    {
+      "bookId": "6I3AloBim",
+      "title": "Daily House",
+      "description": "Lost End"
+    }
+  ],
+  "users": [
+    {
+      "userId": "ofw2S6WI_",
+      "name": "Trần Phước Trường Vũ ",
+      "email": "vutptit@gmail.com",
+      "password": "123123",
+      "isAdmin": true
+    },
+    {
+      "id": "0w6z8tDcL",
+      "password": "$2b$10$WRxiz7JG4mYnV.CTNizswe8hh3o66Bng3ZXavAJk1AVHRlobxHSc.",
+      "email": "123@gmail.com",
+      "name": "long",
+      "isAdmin": false,
+      "wrongLoginCount": 0
+    },
+    {
+      "id": "w2X9LdXh6",
+      "password": "$2b$10$tTlwJzTz/hGPRC33C4YQIOFg.MtzUsh0qa/0mYTcdr4erd/r5.aUK",
+      "email": "vutpt111@gmail.com",
+      "name": "Trần Phước Trường Vũ ",
+      "isAdmin": false
+    },
+    {
+      "id": "I0cbQjSB7",
+      "password": "$2b$10$sNBw9/xIce.IqVzIZL0Sz.hha4LJCYVNtDRVl0e044xJu4lsOsUoG",
+      "email": "punnui11@gmail.com",
+      "name": "Thanh",
+      "isAdmin": false,
+      "wrongLoginCount": 0
+    },
+    {
+      "id": "PrvBHSDfC",
+      "password": "$2b$10$0Re57gdTabkHKYeSBiKHkO9CpjspVzQQ/eW/gz/1fSs6lBGkoh6ca",
+      "email": "thanh111@gmail.com",
+      "name": "Phong",
+      "isAdmin": false
+    },
+    {
+      "id": "ATosRTKUC",
+      "password": "$2b$10$BBqROB20kmtoqfAUoRAb8e6NzXCO5UePPKWSIuwe/64xNW4JY7dLG",
+      "email": "vu1111@gmail.com",
+      "name": "Trần Phước Trường Vũ ",
+      "isAdmin": false,
+      "wrongLoginCount": 0
+    },
+    {
+      "id": "SOHIjBnDL",
+      "password": "$2b$10$1FzxIm9.XlmVX3CGJtxv5uWHu8KZ85U1KDDnqBus.Iy4Xw/WyIB.G",
+      "email": "11mai@gmail.com",
+      "name": "Trần Phước Trường Vũ ",
+      "isAdmin": false,
+      "wrongLoginCount": 0
+    }
+  ],
+  "transactions": [
+    {
+      "transactionId": "h5H30xEGL",
+      "userId": "EhizP6RPo",
+      "bookId": "1mWuehzHk",
+      "isComplete": true
+    },
+    {
+      "transactionId": "RAhBXVF0d",
+      "userId": "ofw2S6WI_",
+      "bookId": "XxDiPItrB",
+      "isComplete": true
+    },
+    {
+      "transactionId": "xtMTkKHxA",
+      "userId": "ofw2S6WI_",
+      "bookId": "6I3AloBim"
+    },
+    {
+      "transactionId": "eTAQ6UFF7",
+      "userId": "EhizP6RPo",
+      "bookId": "XxDiPItrB"
+    },
+    {
+      "transactionId": "4XuEzsXHJ",
+      "userId": "EhizP6RPo",
+      "bookId": "1mWuehzHk"
+    }
+  ]
+}

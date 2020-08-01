@@ -1,0 +1,56 @@
+extends ../../layouts/common
+
+block content
+     
+    h1(class="text-center") Transactions Libary
+    
+    if errors
+      each error in errors 
+        .alert.alert-danger(role='alert')= error
+
+    form(action="/route", class="d-flex")
+
+      button(type="submit", class="btn btn-outline-primary") Back
+
+    form(action="/transaction/search", method="GET", class="d-flex")
+
+      input(type="text", name= "q", class="form-control")
+
+      button(type="Submit", class="btn btn-outline-primary ml-2") Search ID     
+
+    if isAdmin
+      form(action="/transaction/create", method="POST", class="d-flex")
+        label Users:
+        span &nbsp
+        select(name='user')
+          each user in users
+            option(value= user.userId, class="dropdown-item") #{user.name}
+        span &nbsp  
+
+        label Books:
+        span &nbsp
+        select(name='book')
+          each book in books
+            option(value= book.bookId, class="dropdown-item") #{book.title}  
+          span &nbsp
+        button(type="submit", class="btn btn-outline-primary ml-2") Add
+      
+    table(style='width:100%', class="table table-bordered")
+      tr
+        th(scope="col") ID
+        th(scope="col") User
+        th(scope="col") Book
+        th(scope="col") Logout
+      each transaction in transactions
+        tr
+          td= transaction.transactionId       
+          td= transaction.userId 
+          td= transaction.bookId
+          td
+            if transaction.isComplete
+              a(class="btn btn-outline-primary", href="#") True
+            else
+              a(class="btn btn-outline-primary", href="/transaction/"+  transaction.transactionId + "/complete" ) False
+              
+             
+
