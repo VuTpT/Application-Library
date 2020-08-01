@@ -37,7 +37,7 @@
       "name": "admin",
       "password": "$2b$10$nDYu9FMIbPtbexwxLburT.9oZC1gmpC1T4nEl3Sxr7FdXUnsOlvhK",
       "email": "admin@gmail.com",
-      "isAdmin": true,
+      "isAdmin": false,
       "wrongLoginCount": 1
     },
     {
